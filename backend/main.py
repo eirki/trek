@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from . import api, dev
+from . import api, dev, version
 
 # from .submodule import module
 
@@ -33,3 +33,8 @@ async def root(request: Request):
             "importmap": None,
         },
     )
+
+
+@app.get("/version")
+async def version_page() -> str:
+    return version.version
