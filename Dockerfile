@@ -14,11 +14,12 @@ RUN mkdir -p ./frontend/dist
 COPY package*.json ./
 RUN npm install
 
-COPY ./frontend/src snowpack.config.js snowpack-prod.config.js ./
+COPY snowpack.config.js snowpack-prod.config.js ./
+COPY ./frontend/src ./frontend/src
 RUN ./node_modules/.bin/snowpack build --config snowpack-prod.config.js
 
 # prod environment
-FROM python:3.9-slim-buster
+FROM python:3.8-slim-buster
 
 COPY requirements.txt /tmp/
 
@@ -29,7 +30,8 @@ USER appuser
 RUN python -m venv venv && venv/bin/pip install --upgrade pip && venv/bin/pip install -r /tmp/requirements.txt
 
 COPY backend ./backend
-COPY static ./static
+COPY frontend/static ./frontend/static
+COPY frontend/templates ./frontend/templates
 COPY --from=build /home/node/frontend/dist ./frontend/dist
 
 CMD ["venv/bin/uvicorn", "backend.main:app"]

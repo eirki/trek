@@ -12,7 +12,7 @@ DEBUG_MODE = "--reload" in sys.argv
 
 app = FastAPI()
 app.mount("/dist", StaticFiles(directory="frontend/dist"), name="dist")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 templates = Jinja2Templates(directory="frontend/templates")
 
 app.include_router(api.router)
@@ -30,5 +30,6 @@ async def root(request: Request):
             "request": request,
             "title": "Title here",
             "source": "dist",
+            "importmap": None,
         },
     )
