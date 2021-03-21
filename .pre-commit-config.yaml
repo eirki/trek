@@ -38,3 +38,8 @@ repos:
         entry: flake8
         language: system
         types: [python]
+      - id: standardjs
+        name: standardjs
+        entry: npx standard
+        language: system
+        types: [javascript]
