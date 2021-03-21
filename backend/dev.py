@@ -5,7 +5,7 @@ from fastapi import APIRouter, Request
 build_folder = "dist/_snowpack/pkg"
 
 
-def fix_path(path: str) -> str:
+def fix_path(path: str) -> str:  # no test coverage
     path = path[1:]
     path = "/" + build_folder + path
     if not path.endswith(".js"):
@@ -13,7 +13,7 @@ def fix_path(path: str) -> str:
     return path
 
 
-def load_importmap() -> str:
+def load_importmap() -> str:  # no test coverage
     with open(f"frontend/{build_folder}/import-map.json") as file_:
         importmap = json.load(file_)
     importmap["imports"] = {
@@ -22,7 +22,7 @@ def load_importmap() -> str:
     return json.dumps(importmap)
 
 
-def router(templates):
+def router(templates):  # no test coverage
     dev_router = APIRouter()
 
     importmap = load_importmap()

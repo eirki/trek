@@ -5,6 +5,5 @@ dev:
 	uvicorn backend.main:app --reload
 
 test:
-	python -m pytest
-
+	pytest backend/tests/
 

@@ -17,7 +17,7 @@ templates = Jinja2Templates(directory="frontend/templates")
 
 app.include_router(api.router)
 
-if DEBUG_MODE:
+if DEBUG_MODE:  # no test coverage
     app.mount("/src", StaticFiles(directory="frontend/src"), name="src")
     app.include_router(dev.router(templates))
 
