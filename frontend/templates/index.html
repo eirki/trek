@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+
+<head>
+  <title> {{ title }} </title>
+  <link href="{{ source }}/style.css" rel="stylesheet">
+  <link href="static/favicon.ico" rel="icon" type="image/png">
+
+
+</head>
+
+<body>
+</body>
+
+{% if importmap is not none %}
+<script type="importmap">
+    {{ importmap | safe }}
+</script>
+{% endif %}
+
+<script src="{{ source }}/index.js" type="module"></script>
+
+</html>

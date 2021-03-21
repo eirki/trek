@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "snowpack": "^3.0.11"
+  },
+  "dependencies": {
+    "mithril": "^2.0.4"
+  }
+}

@@ -1,0 +1,9 @@
+aiofiles
+fastapi
+jinja2
+python-multipart
+python-snappy
+uvicorn
+httpx
+requests
+geopy
