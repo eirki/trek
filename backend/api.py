@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import typing as t
+
 from fastapi import APIRouter, Request
 import geopy
 from geopy.geocoders import Nominatim
@@ -19,8 +21,11 @@ def point_dict(location: geopy.Location) -> dict:
     }
 
 
-def location_query(query: str) -> list[geopy.Location]:  # no test coverage
-    return geolocator.geocode(query, exactly_one=False, language="en")
+def location_query(query: str) -> t.Optional[list[geopy.Location]]:  # no test coverage
+    try:
+        return geolocator.geocode(query, exactly_one=False, language="en")
+    except geopy.exc.GeocoderUnavailable:
+        return None
 
 
 @router.get("/locations")
