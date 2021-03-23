@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Devcards</title>
+    <link href="/static/favicon.ico" rel="icon" type="image/png">
+
+
+</head>
+
+<body class="p-3">
+    {% for devcard in devcards %}
+    <div><a href="/devcards/{{ devcard }}">{{ devcard }}</a></div>
+    {% endfor %}
+</body>
+
+<script type="importmap">
+    {{ importmap | safe }}
+</script>
+
+</html>

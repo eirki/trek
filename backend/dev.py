@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from fastapi import APIRouter, Request
 
@@ -35,6 +36,35 @@ def router(templates):  # no test coverage
                 "request": request,
                 "importmap": importmap,
                 "source": "src",
+            },
+        )
+
+    @dev_router.get("/devcards/")
+    async def serve_devcard_list(request: Request):
+        devcards = [
+            path.stem
+            for path in Path("frontend/src/devcards").glob("*.js")
+            if not path.stem.startswith("_")
+        ]
+        return templates.TemplateResponse(
+            "devcard-list.html",
+            {
+                "request": request,
+                "source": "src",
+                "devcards": devcards,
+                "importmap": importmap,
+            },
+        )
+
+    @dev_router.get("/devcards/{devcard}")
+    async def serve_devcard(request: Request, devcard: str):
+        return templates.TemplateResponse(
+            "devcard.html",
+            {
+                "request": request,
+                "source": "src",
+                "devcard": devcard,
+                "importmap": importmap,
             },
         )
 

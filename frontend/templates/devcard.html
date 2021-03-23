@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+
+<head>
+    <title> {{ devcard }} </title>
+    <link href="/{{ source }}/style.css" rel="stylesheet">
+    <link href="/static/favicon.ico" rel="icon" type="image/png">
+
+
+</head>
+
+<body class="p-3">
+</body>
+
+<script type="importmap">
+    {{ importmap | safe }}
+</script>
+
+
+<script src="/src/devcards/{{devcard}}.js" type="module"></script>
+
+</html>
