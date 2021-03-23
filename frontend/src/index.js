@@ -6,7 +6,7 @@ function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function autocomplete (event, state) {
+async function fetchSuggestions (event, state) {
   console.log(event)
 
   const query = event.target.value
@@ -25,10 +25,7 @@ async function autocomplete (event, state) {
   console.log(`Fetching: ${url}`)
   m.request({
     method: 'GET',
-    url: url,
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    url: url
   }).then(data => {
     console.log(data)
     if (query !== event.target.value) {
@@ -39,41 +36,81 @@ async function autocomplete (event, state) {
   })
 }
 
-function selectSuggestion (state, location) {
-  console.log(location)
-  state.selected = location
+export function searchBoxStateInit () {
+  return {
+    boxText: '',
+    suggestions: [],
+    showSuggestions: false
+  }
+}
+
+export function searchBox (globalState, localState) {
+  localState = localState || searchBoxStateInit()
+  return {
+    view: () => m('div', [
+      m('input',
+        {
+          value: localState.boxText,
+          type: 'text',
+          oninput: (e) => {
+            localState.boxText = e.target.value
+            globalState.selected = null
+            fetchSuggestions(e, localState)
+          },
+          onfocus: () => (localState.showSuggestions = true),
+          onfocusout: () => (localState.showSuggestions = false)
+        }
+      ),
+      m('div.autocomplete.dropdown', { class: (localState.showSuggestions) ? null : 'hidden' },
+        m('ul.suggestionbox',
+          localState.suggestions.map(suggestion =>
+            m('li.suggestion',
+              m('a',
+                {
+                  href: '#',
+                  onmousedown: () => {
+                    console.log(suggestion.loccation)
+                    globalState.selected = suggestion
+                    localState.boxText = suggestion.address
+                  }
+                },
+                suggestion.address)
+            )
+          )
+        )
+      )
+    ])
+  }
+}
+
+export function globalStateInit () {
+  return {
+    from: {
+      selected: null
+    },
+    to: {
+      selected: null
+    }
+  }
 }
 
 function main () {
-  const state = {
-    suggestions: [],
-    selected: null,
-    showSuggestions: false
-  }
+  const state = globalStateInit()
+  const fromBox = searchBox(state.from)
+  const toBox = searchBox(state.to)
   const render = {
     view: () => [
       m('h1', 'Hvor vil du dra?'),
-      m('div', [
-        m('input', {
-          type: 'text',
-          oninput: (e) => autocomplete(e, state),
-          onfocus: () => {
-            state.showSuggestions = true
-            console.log(state.showSuggestions)
-          },
-          onfocusout: () => {
-            state.showSuggestions = false
-            console.log(state.showSuggestions)
-          }
-        }),
-        m('div.autocomplete.dropdown', { class: (state.showSuggestions) ? null : 'hidden' },
-          m('ul.suggestionbox',
-            state.suggestions.map(suggestion =>
-              m('li.suggestion', m('a', { href: '#', onmousedown: () => selectSuggestion(state, suggestion) }, suggestion.address)))
-          )
-        )
-      ]),
-      (state.selected) ? m('h2', state.selected.address) : null
+      m(fromBox),
+      (state.from.selected)
+        ? [
+            m('h1', '.. og hvor skal du dra fra?'),
+            m(toBox)
+          ]
+        : null,
+      (state.from.selected && state.to.selected)
+        ? m('div', 'Laster rute..')
+        : null
     ]
   }
   m.mount(document.body, render)
