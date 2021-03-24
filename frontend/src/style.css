@@ -36,8 +36,8 @@ body {
   padding: 4px 12px;
 }
 
-.autocomplete.dropdown ul li:focus,
-.autocomplete.dropdown ul li:hover {
+.autocomplete.dropdown ul li.suggestion:focus,
+.autocomplete.dropdown ul li.suggestion:hover {
   background-color: #F0F0F0;
   cursor: pointer;
 }

@@ -32,7 +32,7 @@ async function fetchSuggestions (event, state) {
       console.log(`discarding results for ${query}`)
       return
     }
-    state.suggestions = data.result
+    state.suggestions = (data.result.length > 0) ? data.result : null
   })
 }
 
@@ -63,20 +63,22 @@ export function searchBox (globalState, localState) {
       ),
       m('div.autocomplete.dropdown', { class: (localState.showSuggestions) ? null : 'hidden' },
         m('ul.suggestionbox',
-          localState.suggestions.map(suggestion =>
-            m('li.suggestion',
-              m('a',
-                {
-                  href: '#',
-                  onmousedown: () => {
-                    console.log(suggestion.loccation)
-                    globalState.selected = suggestion
-                    localState.boxText = suggestion.address
-                  }
-                },
-                suggestion.address)
+          (localState.suggestions === null)
+            ? m('li', 'Ingen forslag')
+            : localState.suggestions.map(suggestion =>
+              m('li.suggestion',
+                m('a',
+                  {
+                    href: '#',
+                    onmousedown: () => {
+                      console.log(suggestion)
+                      globalState.selected = suggestion
+                      localState.boxText = suggestion.address
+                    }
+                  },
+                  suggestion.address)
+              )
             )
-          )
         )
       )
     ])
