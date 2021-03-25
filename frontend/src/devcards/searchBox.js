@@ -67,7 +67,7 @@ function main () {
   console.log(localState)
   const globalState = globalStateInit()
   console.log(globalState)
-  const box = searchBox(globalState, localState)
+  const box = searchBox(globalState, 'from', localState)
   m.mount(document.body, box)
 }
 
