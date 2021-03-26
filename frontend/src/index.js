@@ -46,10 +46,10 @@ export function searchBoxStateInit () {
   }
 }
 
-export function searchBox (globalState, key, localState) {
+export function searchBox (globalState, stateSubset, localState) {
   localState = localState || searchBoxStateInit()
   return {
-    view: () => m('div', [
+    view: () => [
       m('input',
         {
           value: localState.boxText,
@@ -57,7 +57,7 @@ export function searchBox (globalState, key, localState) {
           oninput: (e) => {
             localState.boxText = e.target.value
             localState.suggestions = []
-            globalState[key].selected = null
+            stateSubset.selected = null
             fetchSuggestions(e, localState)
           },
           onfocus: () => (localState.showSuggestions = true),
@@ -74,7 +74,7 @@ export function searchBox (globalState, key, localState) {
                   {
                     href: '#',
                     onmousedown: async () => {
-                      globalState[key].selected = suggestion
+                      stateSubset.selected = suggestion
                       localState.boxText = suggestion.address
                       await updateMap(globalState)
                     }
@@ -84,7 +84,7 @@ export function searchBox (globalState, key, localState) {
             )
         )
       )
-    ])
+    ]
   }
 }
 
@@ -94,8 +94,9 @@ function defineMap (elemId) {
 
 function getRoute (state) {
   const params = new URLSearchParams()
-  params.append('point', [state.from.selected.latitude, state.from.selected.longitude])
-  params.append('point', [state.to.selected.latitude, state.to.selected.longitude])
+  const viapoints = state.viapoints.filter(point => point.selected !== null)
+  const points = [state.from, ...viapoints, state.to]
+  points.map(point => params.append('point', [point.selected.latitude, point.selected.longitude]))
   const url = '/api/route?' + params
   console.log(`Fetching: ${url}`)
   return m.request({
@@ -104,9 +105,13 @@ function getRoute (state) {
   })
 }
 
+function pointsReady (state) {
+  return (state.from.selected && state.to.selected)
+}
+
 async function updateMap (state) {
   console.log(state)
-  if (!(state.from.selected && state.to.selected)) {
+  if (!pointsReady(state)) {
     return
   }
   state.map.eachLayer(function (layer) {
@@ -131,6 +136,8 @@ export function globalStateInit () {
     to: {
       selected: null
     },
+    viapoints: [],
+    viaboxes: [],
     route: null
   }
 }
@@ -138,18 +145,39 @@ export function globalStateInit () {
 export function main (state) {
   state = state || globalStateInit()
   const mapId = 'leafletMap'
-  const fromBox = searchBox(state, 'from')
-  const toBox = searchBox(state, 'to')
-  // const map = routeMap(state)
+  const fromBox = searchBox(state, state.from)
+  const toBox = searchBox(state, state.to)
   const render = {
     view: () => [
       m('h1', 'Hvor vil du dra?'),
-      m(fromBox),
+      m('div', m(fromBox)),
       (state.from.selected)
         ? [
-            m('div', m('button', 'Legg til viapunkt')),
+            state.viaboxes.map((box, i) => m('div', [
+              m('button',
+                {
+                  onclick: () => {
+                    state.viaboxes.splice(i, 1)
+                    state.viapoints.splice(i, 1)
+                    updateMap(state)
+                  }
+                },
+                'X'),
+              m(box)
+            ])),
+            m('div', [
+              m('button', {
+                onclick: () => {
+                  const subset = { selected: null }
+                  const box = searchBox(state, subset)
+                  state.viapoints.push(subset)
+                  state.viaboxes.push(box)
+                }
+              },
+              'Via')
+            ]),
             m('h1', '.. og hvor skal du dra fra?'),
-            m(toBox)
+            m('div', m(toBox))
           ]
         : null,
       m('div',
@@ -158,7 +186,7 @@ export function main (state) {
           style: {
             height: '300px',
             'z-index': 1,
-            visibility: (state.from.selected && state.to.selected)
+            visibility: pointsReady(state)
               ? 'visible'
               : 'hidden'
           },

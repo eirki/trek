@@ -14,10 +14,22 @@ router = APIRouter(
 )
 geolocator = Nominatim(user_agent="trek")
 
+# use with better geolocator
+# def address_context(location_data: dict) -> str:
+#     return ", ".join(
+#         [
+#             location_data[data_point]
+#             for data_point in ["district", "city", "county", "country"]
+#             if data_point in location_data
+#         ]
+#     )
+
 
 def point_dict(location: geopy.Location) -> dict:
     return {
         "address": location.address,
+        # "address": location.raw["name"],
+        # "type": location.raw["type"],
         "latitude": location.latitude,
         "longitude": location.longitude,
         "altitude": location.altitude,
@@ -58,11 +70,6 @@ class GraphhopperRoute(t.TypedDict):
     coordinates: list[CoordinatesElevation]
 
 
-@router.get("/items/")
-async def read_item(points: t.List[int] = Query(None)):
-    return {"ok": True}
-
-
 def split_coord(point: str) -> tuple[float, float]:
     lat, lon = point.split(",")
     return float(lat), float(lon)
@@ -74,18 +81,19 @@ def parse_coord_list(point: list[str] = Query(None)) -> list[tuple[float, float]
 
 @router.get("/route")
 async def route(point: list[tuple[float, float]] = Depends(parse_coord_list)):
-    res = httpx.get(
-        env.graphopper_url,
-        params={
-            "point": [f"{lat},{lon}" for lat, lon in point],
-            "elevation": True,
-            "key": env.graphhopper_api_key,
-            "type": "json",
-            "points_encoded": False,
-            "instructions": False,
-            "avoid": "motorway",
-        },
-    )
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            env.graphopper_url,
+            params={
+                "point": [f"{lat},{lon}" for lat, lon in point],
+                "elevation": True,
+                "key": env.graphhopper_api_key,
+                "type": "json",
+                "points_encoded": False,
+                "instructions": False,
+                "avoid": "motorway",
+            },
+        )
     res.raise_for_status()
     data = res.json()
     route: GraphhopperRoute = data["paths"][0]

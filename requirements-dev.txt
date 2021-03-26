@@ -16,6 +16,10 @@ backcall==0.2.0
     # via ipython
 black==20.8b1
     # via -r requirements-dev.in
+certifi==2020.12.5
+    # via
+    #   -c requirements.txt
+    #   httpx
 cfgv==3.2.0
     # via pre-commit
 click==7.1.2
@@ -39,8 +43,24 @@ flake8==3.8.4
     #   -r requirements-dev.in
     #   flake8-debugger
     #   flake8-print
+h11==0.12.0
+    # via
+    #   -c requirements.txt
+    #   httpcore
+httpcore==0.12.3
+    # via
+    #   -c requirements.txt
+    #   httpx
+httpx==0.17.1
+    # via
+    #   -c requirements.txt
+    #   pytest-httpx
 identify==1.5.13
     # via pre-commit
+idna==2.10
+    # via
+    #   -c requirements.txt
+    #   rfc3986
 importlib-metadata==3.4.0
     # via pre-commit
 iniconfig==1.1.1
@@ -100,12 +120,18 @@ pygments==2.8.0
     # via ipython
 pyparsing==2.4.7
     # via packaging
+pytest-asyncio==0.14.0
+    # via -r requirements-dev.in
 pytest-cov==2.11.1
+    # via -r requirements-dev.in
+pytest-httpx==0.11.0
     # via -r requirements-dev.in
 pytest==6.2.2
     # via
     #   -r requirements-dev.in
+    #   pytest-asyncio
     #   pytest-cov
+    #   pytest-httpx
 python-dateutil==2.8.1
     # via jupyter-client
 pyyaml==5.4.1
@@ -116,6 +142,10 @@ pyzmq==22.0.3
     # via jupyter-client
 regex==2020.11.13
     # via black
+rfc3986[idna2008]==1.4.0
+    # via
+    #   -c requirements.txt
+    #   httpx
 six==1.15.0
     # via
     #   -c requirements.txt
@@ -124,6 +154,11 @@ six==1.15.0
     #   pre-commit
     #   python-dateutil
     #   virtualenv
+sniffio==1.2.0
+    # via
+    #   -c requirements.txt
+    #   httpcore
+    #   httpx
 toml==0.10.2
     # via
     #   black

@@ -9,3 +9,5 @@ mypy
 pre-commit
 pytest
 pytest-cov
+pytest-httpx
+pytest-asyncio

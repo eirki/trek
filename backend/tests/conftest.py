@@ -1,6 +1,8 @@
 import pytest
 from urllib3.connectionpool import HTTPConnectionPool
 
+testurl = "testurl"
+
 
 @pytest.fixture(autouse=True)
 def no_http_requests(monkeypatch):  # no test coverage
@@ -19,3 +21,8 @@ def no_http_requests(monkeypatch):  # no test coverage
     monkeypatch.setattr(
         "urllib3.connectionpool.HTTPConnectionPool.urlopen", urlopen_mock
     )
+
+
+@pytest.fixture
+def non_mocked_hosts() -> list:
+    return [testurl]
