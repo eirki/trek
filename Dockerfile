@@ -19,7 +19,7 @@ COPY ./frontend/src ./frontend/src
 RUN ./node_modules/.bin/snowpack build --config snowpack-prod.config.js
 
 # prod environment
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 
 COPY requirements.txt /tmp/
 
